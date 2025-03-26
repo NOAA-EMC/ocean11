@@ -6,6 +6,15 @@ import re
 from datetime import datetime, timedelta
 
 
+
+
+def is_julian_date(year, julian_day):
+    return julian_day >= 1 \
+        or (is_leap_year(year) and julian_day <= 366) \
+        or (not is_leap_year(year) and julian_day <= 365)
+
+
+
 def extract_first_date(filename, logger=None):
     if logger is None:
         logger = logging.getLogger(__name__)

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 from datetime import datetime
 from datetime import timedelta
@@ -17,6 +19,7 @@ bufr_dir = "/work/noaa/da/marineda/gfs-marine/data/obs/ci/bufr/"
 
 # bufr_dir = '/home/Guillaume.Vernieres/scratch1/runs/realtimeobs/lfs/h1/ops/prod/dcom'
 # ioda_dir = '/scratch1/NCEPDEV/stmp2/Guillaume.Vernieres/runs/realtimeobs/lfs/h1/ops/prod/dcom'
+# ioda_dir = '/scratch1/NCEPDEV/stmp2/Guillaume.Vernieres/runs/realtimeobs/lfs/h1/ops/prod/dcom/20250316/seaice/pda'
 
 # hera
 bufr_dir = '/scratch1/NCEPDEV/da/common/ci/bufr'
