@@ -1,0 +1,14 @@
+from
+/work/noaa/da/edwardg/01142025/global-workflow/sorc/gdas.cd/build/gdas/test/gw-ci/C48mx500_3DVarAOWCDA/EXPDIR/C48mx500_3DVarAOWCDA
+
+
+
+  "prepoceanobs")
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="48GB"
+    ;;   
+
+
