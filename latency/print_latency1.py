@@ -2,13 +2,13 @@
 
 import os
 import sys
-from datetime import datetime
-# Assuming extract_first_date is in a file named date_utils.py
-from date_utils import extract_first_date
+from datetime import datetime, timedelta
+from date_utils import extract_first_date, format_timedelta
+from dir_utils import dir_file_paths
 
-def compute_latency_table(directory, logger=None):
+
+def compute_latency_table(path_list, logger=None):
     """
-    Compute latency table for all files in the given directory.
     Returns a dictionary with filenames as keys and latency (timedelta) as values.
     """
 
@@ -17,19 +17,13 @@ def compute_latency_table(directory, logger=None):
         logger = logging.getLogger(__name__)
 
     latency_table = {}
-    
-    # Check if directory exists
-    if not os.path.isdir(directory):
-        raise ValueError(f"{directory} is not a valid directory")
-    
-    # Iterate through all files in the directory
-    for filename in os.listdir(directory):
-        filepath = os.path.join(directory, filename)
-        
-        # Skip if it's not a file
+
+    for filepath in path_list:
         if not os.path.isfile(filepath):
             continue
-            
+
+        # print(filepath)
+
         try:
             # Get observation time from the file
             ob_time = extract_first_date(filepath)
@@ -43,13 +37,13 @@ def compute_latency_table(directory, logger=None):
             # Calculate latency (creation_time - ob_time)
             latency = creation_time - ob_time
             # print(f'latency = {latency}')
-            latency_table[filename] = latency
+            latency_table[filepath] = latency
             
         except Exception as e:
             # Log the error but continue with other files
             print(f"Error processing {filename}: {str(e)}", file=sys.stderr)
             continue
-            
+
     return latency_table
 
 
@@ -58,24 +52,43 @@ def print_latency_table(latency_table):
         print("No latency data available")
         return
         
-    print("Latency Table:")
     print("Filename".ljust(40), "Latency")
     print("-" * 60)
-    for filename, latency in latency_table.items():
+    latencies = []
+    for filepath, latency in latency_table.items():
+        filename = os.path.basename(filepath)  # Extract the filename from the path
         print(f"{filename.ljust(40)} {str(latency)}")
+        latencies.append(latency)
+
+    if latencies:
+        min_latency = min(latencies, key=lambda td: td.total_seconds())
+        max_latency = max(latencies, key=lambda td: td.total_seconds())
+        avg_latency = sum(latencies, timedelta()) / len(latencies)
+
+        # print("\nLatency Statistics:")
+        print(f"Minimum Latency: {format_timedelta(min_latency)}")
+        print(f"Maximum Latency: {format_timedelta(max_latency)}")
+        print(f"Average Latency: {format_timedelta(avg_latency)}")
+    # else:
+        # print("No latencies available to calculate statistics.")
+
 
 
 if __name__ == '__main__':
     # Check command-line argument
     if len(sys.argv) != 2:
-        print("Usage: python latency_checker.py <directory>")
+        print("Usage: python print_latency1.py <directory>")
         sys.exit(1)
     
     directory = sys.argv[1]
     try:
-        latency_table = compute_latency_table(directory)
+        file_paths = dir_file_paths(directory)
+        # print(f'{len(file_paths)} files')
+        latency_table = compute_latency_table(file_paths)
+        # latency_table = compute_latency_table(directory)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
         sys.exit(1)
 
+    print(f"Latency Table for {directory}:")
     print_latency_table(latency_table)

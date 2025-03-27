@@ -7,6 +7,51 @@ from datetime import datetime, timedelta
 
 
 
+def format_timedelta(td):
+    """Convert timedelta to a human-readable string (days, hours, mins, secs)."""
+    days = td.days
+    seconds = td.seconds
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
+
+
+
+def get_file_creation_time(filename):
+    stat = os.stat(filename)
+    ctime = stat.st_ctime  # Get the file's creation time in Unix timestamp format
+    return datetime.fromtimestamp(ctime)  # Convert Unix timestamp to datetime object
+
+
+
+def beginning_of_day(input_date):
+    # Ensure input_date is a datetime object
+    if not isinstance(input_date, datetime):
+        raise TypeError("Input must be a datetime object")
+
+    # Return a new datetime object with time set to 00:00:00
+    return input_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+# w is the number of hours; it can be negative
+def date_24h_window(given_date, w):
+    # Ensure given_date is a datetime object
+    if not isinstance(given_date, datetime):
+        raise TypeError("Input must be a datetime object")
+
+    # Calculate dates
+    date_before = given_date + timedelta(hours=w)
+    date_after = given_date + timedelta(hours=w+24)
+
+    return date_before, date_after
+
+
+
+def is_leap_year(year):
+    return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+
+
 
 def is_julian_date(year, julian_day):
     return julian_day >= 1 \

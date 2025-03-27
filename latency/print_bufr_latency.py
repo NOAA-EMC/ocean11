@@ -5,7 +5,6 @@ from datetime import datetime
 from datetime import timedelta
 import numpy as np
 import sys
-# import matplotlib.pyplot as plt
 
 gdas_pyiodaconv = "/work/noaa/da/edwardg/03182025/global-workflow/sorc/gdas.cd/build/lib/python3.7"
 obsforge_pyiodaconv = '/work/noaa/da/edwardg/03182025/obsForge/build/lib/python3.7'
@@ -195,6 +194,3 @@ if __name__ == "__main__":
     latency_data = calculate_latency_table(bufr_dir, get_min_max_obs_time)
     
     print_latency_table(latency_data)
-    
-    # plot_latency_segments(latency_data)
-
