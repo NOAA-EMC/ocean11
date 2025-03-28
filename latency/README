@@ -1,0 +1,17 @@
+Usage:
+------
+print_latency1.py <directory>
+
+The argument is a directory which contains files that have dates
+in their filenames. The first date is extracted from the filename
+and is used to compare to the file creation date.
+
+
+Usage:
+------
+print_bufr_latency.py <directory>
+The argument is a directory which contains bufr files.
+Observation dates are extracted from each bufr file and are
+used to calculate the latency by comparing to the file creation 
+date.
+Dependency: pyiodaconv
