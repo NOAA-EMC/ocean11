@@ -4,12 +4,12 @@ import os
 import sys
 from datetime import datetime, timedelta
 from date_utils import extract_first_date, format_timedelta
-from dir_utils import dir_file_paths
+from dir_utils import dir_file_paths, list_files_recursive_relative_path
 
 
 def compute_latency_table(path_list, logger=None):
     """
-    Returns a dictionary with filenames as keys and latency (timedelta) as values.
+    Returns a dictionary with filepaths as keys and latency (timedelta) as values.
     """
 
     if logger is None:
@@ -26,7 +26,8 @@ def compute_latency_table(path_list, logger=None):
 
         try:
             # Get observation time from the file
-            ob_time = extract_first_date(filepath)
+            filename = os.path.basename(filepath)
+            ob_time = extract_first_date(filename)
             # print(f'ob_time = {ob_time}')
             if ob_time is None:
                 continue  # Skip if no valid date extracted
@@ -54,10 +55,16 @@ def print_latency_table(latency_table):
         
     print("Filename".ljust(40), "Latency")
     print("-" * 60)
-    latencies = []
+    # latencies = []
     for filepath, latency in latency_table.items():
         filename = os.path.basename(filepath)  # Extract the filename from the path
         print(f"{filename.ljust(40)} {str(latency)}")
+        # latencies.append(latency)
+
+
+def latency_stats(latency_table):
+    latencies = []
+    for filepath, latency in latency_table.items():
         latencies.append(latency)
 
     if latencies:
@@ -66,6 +73,7 @@ def print_latency_table(latency_table):
         avg_latency = sum(latencies, timedelta()) / len(latencies)
 
         # print("\nLatency Statistics:")
+        print(f'Number of files: {len(latencies)}')
         print(f"Minimum Latency: {format_timedelta(min_latency)}")
         print(f"Maximum Latency: {format_timedelta(max_latency)}")
         print(f"Average Latency: {format_timedelta(avg_latency)}")
@@ -77,10 +85,15 @@ def print_latency_table(latency_table):
 if __name__ == '__main__':
     # Check command-line argument
     if len(sys.argv) != 2:
-        print("Usage: python print_latency1.py <directory>")
+        print("Usage: python latency_from_filename.py <directory>")
         sys.exit(1)
-    
+
     directory = sys.argv[1]
+
+    # files = list_files_recursive_relative_path(directory)
+    # print(files)
+    # sys.exit(1)
+    
     try:
         file_paths = dir_file_paths(directory)
         # print(f'{len(file_paths)} files')
@@ -92,3 +105,7 @@ if __name__ == '__main__':
 
     print(f"Latency Table for {directory}:")
     print_latency_table(latency_table)
+    print("-----------------------------------")
+    latency_stats(latency_table)
+    print("-----------------------------------")
+

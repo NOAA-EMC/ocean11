@@ -6,6 +6,7 @@ from datetime import timedelta
 import numpy as np
 import sys
 
+
 gdas_pyiodaconv = "/work/noaa/da/edwardg/03182025/global-workflow/sorc/gdas.cd/build/lib/python3.7"
 obsforge_pyiodaconv = '/work/noaa/da/edwardg/03182025/obsForge/build/lib/python3.7'
 sys.path.append(obsforge_pyiodaconv)
@@ -15,6 +16,7 @@ from pyiodaconv import bufr
 
 # orion
 bufr_dir = "/work/noaa/da/marineda/gfs-marine/data/obs/ci/bufr/"
+# bufrfile_path = "/work/noaa/da/marineda/gfs-marine/data/obs/ci/bufr/2019010700-gdas.t00z.cstgd.tm00.bufr_d"
 
 # bufr_dir = '/home/Guillaume.Vernieres/scratch1/runs/realtimeobs/lfs/h1/ops/prod/dcom'
 # ioda_dir = '/scratch1/NCEPDEV/stmp2/Guillaume.Vernieres/runs/realtimeobs/lfs/h1/ops/prod/dcom'
@@ -24,7 +26,6 @@ bufr_dir = "/work/noaa/da/marineda/gfs-marine/data/obs/ci/bufr/"
 bufr_dir = '/scratch1/NCEPDEV/da/common/ci/bufr'
 
 
-# bufrfile_path = "/work/noaa/da/marineda/gfs-marine/data/obs/ci/bufr/2019010700-gdas.t00z.cstgd.tm00.bufr_d"
 
 
 def get_bufr_dates(file_path):
@@ -73,7 +74,7 @@ def get_min_max_obs_time(file_path):
 
 
 
-def calculate_latency_table(directory, get_min_max_obs_time):
+def compute_bufr_latency_table(directory, get_min_max_obs_time):
     """
     Calculate latency data for files in a directory, skipping empty files.
     
@@ -93,7 +94,7 @@ def calculate_latency_table(directory, get_min_max_obs_time):
         if os.path.isfile(file_path):  # Ensure it's a file, not a directory
             # Check if the file is empty
             if os.path.getsize(file_path) == 0:
-                print(f"Skipping empty file: {filename}")
+                # print(f"Skipping empty file: {filename}")
                 continue  # Skip to the next file
             
             # Get file creation time
@@ -114,7 +115,7 @@ def calculate_latency_table(directory, get_min_max_obs_time):
     return latency_table
 
 
-def print_latency_table0(latency_table):
+def print_bufr_latency_table0(latency_table):
     """
     Print the latency table with file names and overall average latency window.
     
@@ -143,7 +144,7 @@ def print_latency_table0(latency_table):
     print(f"  - Average Max Latency: {avg_max_latency:.2f} hours")
 
 
-def print_latency_table(latency_table):
+def print_bufr_latency_table(latency_table):
     """
     Print the latency table with file names and latencies in days, hours, minutes, seconds.
     
@@ -190,7 +191,13 @@ def print_latency_table(latency_table):
 
 
 
-if __name__ == "__main__":
-    latency_data = calculate_latency_table(bufr_dir, get_min_max_obs_time)
-    
-    print_latency_table(latency_data)
+if __name__ == '__main__':
+    # Check command-line argument
+    if len(sys.argv) != 2:
+        print("Usage: python bufr_latency.py <directory>")
+        sys.exit(1)
+
+    bufr_dir = sys.argv[1]
+
+    latency_table = compute_bufr_latency_table(bufr_dir, get_min_max_obs_time)
+    print_bufr_latency_table(latency_table)
