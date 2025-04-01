@@ -1,5 +1,5 @@
 import logging
-# import os
+import os
 # import sys 
 # import shutil
 import re
@@ -118,3 +118,10 @@ def extract_first_date(filename, logger=None):
 
     # Return None if no valid date is found
     return None
+
+
+
+def get_first_time_from_filename(filepath):
+    filename = os.path.basename(filepath)
+    return extract_first_date(filename)
+
