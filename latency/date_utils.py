@@ -6,6 +6,20 @@ import re
 from datetime import datetime, timedelta
 
 
+def get_file_modification_time(file_path):
+    try:
+        # Get the file statistics
+        file_stat = os.stat(file_path)
+
+        # st_mtime represents the last modification time
+        modification_time = file_stat.st_mtime
+
+        # Convert the modification time to a datetime object
+        return datetime.fromtimestamp(modification_time)
+    except FileNotFoundError:
+        return f"File {file_path} not found."
+
+
 
 def format_timedelta(td):
     """Convert timedelta to a human-readable string (days, hours, mins, secs)."""

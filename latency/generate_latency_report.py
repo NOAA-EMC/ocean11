@@ -2,7 +2,7 @@ import os
 from dir_utils import dir_file_paths
 from date_utils import get_first_time_from_filename
 from latency_table import LatencyTable
-from bufr_latency import *
+from bufr_utils import *
 
 
 # sort a latency table according to instrument
@@ -23,15 +23,19 @@ def combined_bufr_latency_table(data_dir):
 
     for cycle in ['00', '06', '12', '18']:
         cycle_dir = os.path.join(data_dir, cycle, 'atmos')
-        # print(f'cycle_dir = {cycle_dir}')
+        print(f'cycle_dir = {cycle_dir}')
         
         if os.path.isdir(cycle_dir):
             # Call the function to get the latency table for 'atmos' for this cycle
             file_paths = dir_file_paths(cycle_dir)
             # print(f'file_paths = {file_paths}')
+            file_paths = select_bufr_files(file_paths)
+            # print(f'file_paths = {file_paths}')
+            print(f'selected = {len(file_paths)} files')
             latency_table = LatencyTable()
+            print(f'XXXXXXXXXXXselected = {len(file_paths)} files')
             latency_table.compute(file_paths, get_bufr_ob_time)
-            # print(f'latency_table = {latency_table}')
+            self.logger.debug(f'latency_table = {latency_table}')
             
             combined_latency.add(latency_table)
     
@@ -79,9 +83,9 @@ def print_latency_report(latency_table_list):
         n = latency_table.number_of_items()
         min = latency_table.min_latency()
         max = latency_table.max_latency()
-        avg = latency_table.max_latency()
+        avg = latency_table.avg_latency()
         median = latency_table.median_latency()
-        print(f'{instrument}\t{n}\t{min}\t{max}\t{avg}\t{median}')
+        print(f'{instrument}\t\t{n}\t{min}\t{max}\t{avg}\t{median}')
         # latency_table.print()
         # latency_table.stats()
 
@@ -90,17 +94,23 @@ def print_latency_report(latency_table_list):
 
 # Mindo's data on hercules:
 # data_dir = '/work/noaa/da/marineda/gfs-marine/data/obs/gfs.20230425'
+# wcoss:
+# not data_root = '/lfs/h1/ops/prod/com/obsproc/v1.2'
 
 if __name__ == '__main__':
     # Check command-line argument
-    if len(sys.argv) != 2:
-        print("Usage: python report_latency.py <directory>")
-        sys.exit(1)
+    # if len(sys.argv) != 2:
+        # print("Usage: python report_latency.py <directory>")
+        # sys.exit(1)
+ 
+    # data_dir = sys.argv[1]
 
-    data_dir = sys.argv[1]
+    # # ocean_dir_latency_table_list = list_of_instrument_latency_tables(data_dir)
+    # # print_latency_report(ocean_dir_latency_table_list)
 
-    ocean_dir_latency_table_list = list_of_instrument_latency_tables(data_dir)
-    print_latency_report(ocean_dir_latency_table_list)
+    root_data_dir = '/lfs/h2/emc/obsproc/noscrub/iliana.genkova/CRON/SOCA/com/obsproc/v1.2/'
+    date = '20250401'
+    data_dir = root_data_dir + 'gdas.' + date
 
 
     bufr_latency_table = combined_bufr_latency_table(data_dir)

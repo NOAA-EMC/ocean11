@@ -1,4 +1,6 @@
 import os
+import time
+
 
 
 # return a list of paths for all files in a dir
@@ -23,6 +25,18 @@ def dir_file_paths(directory):
             continue
 
     return path_list
+
+
+    
+# case insensitive
+def select_by_instrument(files, instrument_name):
+    # print(f"selecting for instrument |{instrument_name}|")
+    filtred_files = []
+    for file in files:
+        if instrument_name.lower() in file.lower():  # (case insensitive)
+            filtred_files.append(file)
+            # print(f'matching..... |{file}|')
+    return filtred_files
 
 
 

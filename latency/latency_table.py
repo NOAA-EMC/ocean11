@@ -4,15 +4,19 @@ import os
 import sys
 import statistics
 from datetime import datetime, timedelta
-from date_utils import get_first_time_from_filename, format_timedelta
-from dir_utils import dir_file_paths, list_files_recursive_relative_path
+# from date_utils import get_first_time_from_filename, format_timedelta
+# from dir_utils import dir_file_paths, list_files_recursive_relative_path
+from date_utils import *
+from dir_utils import *
 
 
 class LatencyTable:
     def __init__(self, logger=None):
         if logger is None:
             import logging
-            logger = logging.getLogger(__name__)
+            self.logger = logging.getLogger(__name__)
+        else:
+            self.logger = logger
         self.latency_table = {}
 
 
@@ -23,6 +27,8 @@ class LatencyTable:
 # a dictionary with filepaths as keys and latency (timedelta) as values.
 # get_ob_time is a method to get observation time from the file or filename
     def compute(self, path_list, get_ob_time):
+        print(f'latency table computation for {len(path_list)} files')
+        # self.logger.debug(f'latency table: compute for {len(path_list)} files')
         for filepath in path_list:
             if not os.path.isfile(filepath):
                 continue
@@ -30,21 +36,28 @@ class LatencyTable:
                 # print(f"Skipping empty file: {filename}")
                 continue  # Skip to the next file
 
-            # print(filepath)
+            print(f'latency for {filepath})')
+            # self.logger.debug(f'latency for {filepath})')
 
             try:
-                # Get observation time from the file
+                # Get observation time from the file name
                 ob_time = get_ob_time(filepath)
-                # print(f'ob_time = {ob_time}')
+                # self.logger.debug(f'ob_time = {ob_time}')
+                print(f'ob_time = {ob_time}')
                 if ob_time is None:
                     continue  # Skip if no valid date extracted
                 
                 # Get file creation time
-                creation_time = datetime.fromtimestamp(os.path.getctime(filepath))
+                # creation_time = datetime.fromtimestamp(os.path.getctime(filepath))
+                # print(f'creation_time = {creation_time}')
+
+                file_modification_time = get_file_modification_time(filepath)
+                print(f'file_modification_time = {file_modification_time}')
 
                 # Calculate latency (creation_time - ob_time)
-                latency = creation_time - ob_time
-                # print(f'latency = {latency}')
+                # latency = creation_time - ob_time
+                latency = file_modification_time - ob_time
+                print(f'latency = {latency}')
                 self.latency_table[filepath] = latency
             
             except Exception as e:
@@ -75,7 +88,7 @@ class LatencyTable:
         return latencies
 
     def stats(self):
-        latencies = get_all_latencies()
+        latencies = self.get_all_latencies()
         if latencies:
             min_latency = min(latencies, key=lambda td: td.total_seconds())
             max_latency = max(latencies, key=lambda td: td.total_seconds())
