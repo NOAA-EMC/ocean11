@@ -1,0 +1,9 @@
+bufr:
+  variables:
+    dateTime:
+      datetime:
+        year: "*/YEAR"
+        month: "*/MNTH"
+        day: "*/DAYS"
+        hour: "*/HOUR"
+        minute: "*/MINU"
